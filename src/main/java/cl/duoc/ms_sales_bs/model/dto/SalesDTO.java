@@ -1,9 +1,8 @@
 package cl.duoc.ms_sales_bs.model.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,17 +17,21 @@ import lombok.ToString;
 @ToString
 public class SalesDTO {
 
+    @JsonProperty("idsales")
     private Long idSales;
 
-    private LocalDate salesDate;
+    @JsonProperty("usuario")
+    private Long idUsuario;
 
-    private UsuarioDTO usuario;
-
+    @JsonProperty("estadoventa")
     private String estadoVenta;
 
+    @JsonProperty("metodoretiro")
     private String metodoDeRetiro;
 
-    private BigDecimal valorTotal;
+    @JsonProperty("valortotal")
+    private Long valorTotal;
 
-    private List<SalesDetailDTO> detalles;
+    @JsonProperty("detalles")
+    private List<SalesDetailDTO> salesDetailDtoList;
 }

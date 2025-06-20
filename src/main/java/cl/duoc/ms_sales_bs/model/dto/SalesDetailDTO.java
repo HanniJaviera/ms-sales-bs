@@ -1,5 +1,7 @@
 package cl.duoc.ms_sales_bs.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +15,12 @@ import lombok.ToString;
 @ToString
 public class SalesDetailDTO {
 
-    private Long idSalesDetail;
+    private Long id;
 
-    private ProductDTO product;
-
-    private Integer cantidad;
+    @JsonProperty("productId")
+    private ProductDTO productId;
+    
+    private Long quantity;
+    
+    private Long salesId; 
 }

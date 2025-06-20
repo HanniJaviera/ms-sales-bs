@@ -1,8 +1,8 @@
 package cl.duoc.ms_sales_bs.service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import cl.duoc.ms_sales_bs.clients.ProductBsFeignClient;
 import cl.duoc.ms_sales_bs.clients.SalesDbFeignClient;
 import cl.duoc.ms_sales_bs.model.dto.ProductDTO;
@@ -20,29 +20,37 @@ public class SalesService {
     @Autowired
     ProductBsFeignClient productBsFeignClient;
 
+public SalesDTO findSalesById(Long id) {
+        // 1. Obtener venta desde ms-sales-db
+        SalesDTO salesDTO = salesDbFeignClient.findSalesById(id).getBody();
 
-public SalesDTO findSalesById(Long id){
-    SalesDTO salesDTO = salesDbFeignClient.findSalesById(id).getBody();
+        if (salesDTO == null) {
+            throw new RuntimeException("Venta no encontrada");
+        }
 
-    for(SalesDetailDTO salesDetailDTO: salesDTO.getDetalles()){  // Cambié getSalesDetailDtoList() a getDetalles()
-        Long idProducto = salesDetailDTO.getProduct().getIdProduct();  // Cambiado a getIdProduct()
-        ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
-        salesDetailDTO.setProduct(product);
+        // 2. Recorremos los detalles y le inyectamos los productos
+        if (salesDTO.getSalesDetailDtoList() != null) {
+            for (SalesDetailDTO detail : salesDTO.getSalesDetailDtoList()) {
+                Long productId = detail.getProductId().getIdProduct();
+
+                ProductDTO product = productBsFeignClient.findProductById(productId).getBody();
+                detail.setProductId(product);
+            }
+        }
+
+        return salesDTO;
     }
 
-    return salesDTO;
-}
+        public SalesDTO insertSale(SalesDTO saleDTO){
 
-public SalesDTO insertSale(SalesDTO saleDTO){
+        SalesDTO dto = salesDbFeignClient.insertSale(saleDTO).getBody();
+        
+        for(SalesDetailDTO salesDetailDTO: dto.getSalesDetailDtoList()){
+            Long idProducto = salesDetailDTO.getId();
+            ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
+            salesDetailDTO.setProductId(product);
+        }
 
-    SalesDTO dto = salesDbFeignClient.insertSale(saleDTO).getBody();
-
-    for(SalesDetailDTO salesDetailDTO: dto.getDetalles()){  // Cambié getSalesDetailDtoList() a getDetalles()
-        Long idProducto = salesDetailDTO.getProduct().getIdProduct();
-        ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
-        salesDetailDTO.setProduct(product);
-    }
-
-    return dto;    
-}
+        return dto;    
+     }
 }
