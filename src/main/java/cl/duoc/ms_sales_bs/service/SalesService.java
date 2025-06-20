@@ -21,28 +21,28 @@ public class SalesService {
     ProductBsFeignClient productBsFeignClient;
 
 
-     public SalesDTO findSalesById(Long id){
-        SalesDTO salesDTO = salesDbFeignClient.findSalesById(id).getBody();
-     
-        for(SalesDetailDTO salesDetailDTO: salesDTO.getSalesDetailDtoList()){
-            Long idProducto = salesDetailDTO.getProduct().getId();
-            ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
-            salesDetailDTO.setProduct(product);
-        }
+public SalesDTO findSalesById(Long id){
+    SalesDTO salesDTO = salesDbFeignClient.findSalesById(id).getBody();
 
-        return salesDTO;
-     }
+    for(SalesDetailDTO salesDetailDTO: salesDTO.getDetalles()){  // Cambié getSalesDetailDtoList() a getDetalles()
+        Long idProducto = salesDetailDTO.getProduct().getIdProduct();  // Cambiado a getIdProduct()
+        ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
+        salesDetailDTO.setProduct(product);
+    }
 
-     public SalesDTO insertSale(SalesDTO saleDTO){
+    return salesDTO;
+}
 
-        SalesDTO dto = salesDbFeignClient.insertSale(saleDTO).getBody();
-        
-        for(SalesDetailDTO salesDetailDTO: dto.getSalesDetailDtoList()){
-            Long idProducto = salesDetailDTO.getProduct().getId();
-            ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
-            salesDetailDTO.setProduct(product);
-        }
+public SalesDTO insertSale(SalesDTO saleDTO){
 
-        return dto;    
-     }
+    SalesDTO dto = salesDbFeignClient.insertSale(saleDTO).getBody();
+
+    for(SalesDetailDTO salesDetailDTO: dto.getDetalles()){  // Cambié getSalesDetailDtoList() a getDetalles()
+        Long idProducto = salesDetailDTO.getProduct().getIdProduct();
+        ProductDTO product = productBsFeignClient.findProductById(idProducto).getBody();
+        salesDetailDTO.setProduct(product);
+    }
+
+    return dto;    
+}
 }
