@@ -23,6 +23,8 @@ public class SalesDTO {
     @JsonProperty("usuario")
     private Long idUsuario;
 
+    private String nombreusuario;
+
     @JsonProperty("estadoventa")
     private String estadoVenta;
 

@@ -2,12 +2,15 @@ package cl.duoc.ms_sales_bs.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import cl.duoc.ms_sales_bs.clients.ProductBsFeignClient;
 import cl.duoc.ms_sales_bs.clients.SalesDbFeignClient;
+import cl.duoc.ms_sales_bs.clients.UsuarioBsFeignClient;
 import cl.duoc.ms_sales_bs.model.dto.ProductDTO;
 import cl.duoc.ms_sales_bs.model.dto.SalesDTO;
 import cl.duoc.ms_sales_bs.model.dto.SalesDetailDTO;
+import cl.duoc.ms_sales_bs.model.dto.UsuarioDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -19,6 +22,9 @@ public class SalesService {
 
     @Autowired
     ProductBsFeignClient productBsFeignClient;
+
+    @Autowired
+    UsuarioBsFeignClient usuarioBsFeignClient;
 
 public SalesDTO findSalesById(Long id) {
         // 1. Obtener venta desde ms-sales-db
@@ -37,6 +43,16 @@ public SalesDTO findSalesById(Long id) {
                 detail.setProductId(product);
             }
         }
+
+        if (salesDTO.getIdUsuario() != null) {
+        ResponseEntity<UsuarioDTO> response = usuarioBsFeignClient.findUsuarioById(salesDTO.getIdUsuario());
+        UsuarioDTO usuario = response.getBody();
+
+        if (usuario != null) {
+        String nombreCompleto = usuario.getNombreUsuario() + " " + usuario.getApellidoPaterno();
+        salesDTO.setNombreusuario(nombreCompleto);
+    }
+}
 
         return salesDTO;
     }
